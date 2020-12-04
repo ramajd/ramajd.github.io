@@ -1,0 +1,35 @@
+#+title: New Start
+#+date: <2020-12-04 15:10>
+#+filetags: personal
+
+
+after a while finally I decided to restore back my personal weblog, writting
+down challenges I'm facing during my daily work. this time I decided to write in
+English might be more useful for the ones wthat might face same issues.
+
+one of the challenges that I faced with was to choose a proper platform to build
+th blog on. using blog services like /Blogger/ or /Wordpress/ they both were
+kind of over-qualified for my needs. so I decided to switch to static blog
+generators this time.
+
+It's been a while that I'm using [[https://guix.gnu.org][GNU Guix]] on my work and it was an opportunity
+for me to use /GNU Emacs/ as my common text editor and IDE. working more with
+Emacs, I love this editor much more.
+
+[[./static/images/emacs_gnu_org_mode.png]]
+
+# #+begin_export html
+# <img src="/static/images/emacs_gnu_org_mode.png">
+# #+end_export
+
+Since for each problem you face, Emacs provides a solution for, it also has a
+solution for my Blogging Problem, /[[https://orgmode.org/][Org Mode]]/. search for blog tools for Emacs,
+there are a bunch of packages already available, and since I was looking for a
+simple tool to allow me setup my blog rapidly, I decided to use
+/[[https://github.com/bastibe/org-static-blog][org-static-blog]]/
+
+in order to setup, I just need to add an [[https://github.com/bastibe/org-static-blog#examples][initial configuration]] to my ~init.el~
+file, create new post using ~org-static-blog-create-new-post~ and run
+~org-static-blog-publish~ to generate html files. after that the only thing that
+I need to do is to publish generated files to
+[[https://pages.github.com/][github pages]]. 

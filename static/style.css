@@ -1,0 +1,73 @@
+
+
+/* Global styles  */
+body { background-color: #efefef; }
+a, a:visited { color: #555555; }
+a:hover { color: #111; }
+
+/* Layout definition  */
+#preamble, #content, #postamble {
+    background-color: #fff;
+    margin: auto;
+    width: 650px;
+    padding: 50px;
+}
+
+#postamble {
+    padding-top: 50px;
+    font-size: 0.7em;
+}
+
+/* Header styles */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+.header > a {
+    font-weight: bold;
+    font-size: 1.5em;
+}
+.header ul {
+    list-style: none;
+}
+.header ul li {
+    float: left;
+    margin-left: 0.5em;
+}
+
+/* Code blocks */
+.org-src-container {
+    border: 1px solid #d7d7d7;
+    padding: 0.5em;
+    background-color: #000000;
+    color: #ffffff;
+}
+
+/* Block Quotes */
+blockquote:before {
+    color: #ccc;
+    content: open-quote;
+    font-size: 4em;
+    line-height: 0.1em;
+    margin-right: 0.25em;
+    vertical-align: -0.4em;
+    font-family: arial;
+    font-weight: bold;
+}
+blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 0;
+  padding: 1.5em 10px;
+}
+blockquote p {
+  display: inline;
+}
+
+/* Images */
+figure {
+    text-align: center;
+    margin:0;
+}
