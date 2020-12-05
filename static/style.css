@@ -44,6 +44,11 @@ a:hover { color: #111; }
     background-color: #000000;
     color: #ffffff;
 }
+p > code {
+    color: #313131;
+    background-color: #f0f0f0;
+    padding: 2px;
+}
 
 /* Block Quotes */
 blockquote:before {
