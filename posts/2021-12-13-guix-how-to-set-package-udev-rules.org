@@ -1,0 +1,52 @@
+#+title: Guix: how to set package udev rules
+#+date: <2021-12-13 11:43>
+#+description: setup udev rules for Guix packages
+#+filetags: guix
+
+#+BEGIN_QUOTE
+Just read a /[[https://lists.gnu.org/archive/html/guix-devel/2021-12/msg00095.html][thread]]/ on guix mailing list, about *adding udev rules* for a
+package. in order to have an fixed reference about it, I decided to post it
+here.
+#+END_QUOTE
+
+adding ~udev~ rules for a guix package is as easy as adding it to the
+~<out>/lib/udev/rules.d/~ directory. so we can either add it as an ~INSTALL~
+rule in our ~CMakefile.txt~ or add it to manually install the rules as part of
+our package ~install~ phase:
+
+#+BEGIN_SRC scheme
+  (define-public package-name
+    (package
+     ...
+     (arguments
+      `(#:phases
+        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-udev-rules
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "CMakefile.txt"
+                            (("/ib/udev/rules.d")
+                             (string-append out "/lib/udev/rules.d")))
+               #t))))))
+     ...))
+#+END_SRC
+
+#+BEGIN_SRC scheme
+  (define-public package-name
+    (package
+     ...
+     (arguments
+      `(#:phases
+        (modify-phases %standard-phases
+         (add-after 'install 'install-udev-rules
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/lib/udev/rules.d"))
+               (copy-file "123-my-custom-udev.rules"
+                          (string-append out
+                                         "/lib/udev/rules.d/"
+                                         "123-my-custom-udev.rules"))
+               #t))))))
+     ...
+     ))
+#+END_SRC
