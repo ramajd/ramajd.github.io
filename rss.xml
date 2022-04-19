@@ -4,7 +4,175 @@
 <title><![CDATA[Personal Notes by ramajd]]></title>
 <description><![CDATA[Personal Notes by ramajd]]></description>
 <link>https://ramajd.github.io/</link>
-<lastBuildDate>Mon, 13 Dec 2021 15:57:17 +0330</lastBuildDate>
+<lastBuildDate>Tue, 19 Apr 2022 21:10:33 +0430</lastBuildDate>
+<item>
+  <title><![CDATA[Qt bindings of GStreamer on Android (failed experience)]]></title>
+  <description><![CDATA[
+<blockquote>
+<p>
+for the ones who may read this note, unfortunately I couldn't succeed to
+provide a working solution. however I decided to write my findings here, hat
+hopefully help someone else that wants to cdo the same thing in the future.
+</p>
+</blockquote>
+
+<p>
+There are two things that we should consider when we want to start our journay:
+</p>
+<ul class="org-ul">
+<li>first thing is that all the fancy automated tools provided by GStreamer team for
+Android doesn't work here.</li>
+<li>he second is that the Qt bindings are not available in the official pre-built
+binaries and we need to create our own custom version of gstreamer library.</li>
+</ul>
+
+
+<div id="outline-container-org30f02b8" class="outline-2">
+<h2 id="org30f02b8">Build the <code>libgstreamer_android.so</code></h2>
+<div class="outline-text-2" id="text-org30f02b8">
+<p>
+Official tutorials of Gstreamer, are based on Android NDK build system, which
+automatically build and deploy the <code>libgstreamer_android.so</code> library (absolutely
+without Qt support!) to the target APK based on the plugins has been chosen
+inside make file.
+</p>
+
+<p>
+we need to replace it by custom targets in our <code>qmake</code> project file. to do so we
+defined two custom targets to build and cleanup the <code>libgstreamer_android.so</code>
+file for us:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-makefile"><span style="color: #00ffff;">GSTREAMER_ROOT_ANDROID</span> = $$_PRO_FILE_PWD_/gstreamer-1.0/armv7
+
+<span style="color: #00ffff;">gst.target</span> = $$ANDROID_PACKAGE_SOURCE_DIR/libs/armeabi-v7a/libgstreamer_android.so
+<span style="color: #00ffff;">gst.commands</span> = cd $$ANDROID_PACKAGE_SOURCE_DIR; \
+               ./build_gstreamer.sh TARGET_ARCH_ABI=armeabi-v7a \
+               <span style="color: #00ffff;">GSTREAMER_ROOT_ANDROID</span>=$$GSTREAMER_ROOT_ANDROID \
+               <span style="color: #00ffff;">NDK_PROJECT_PATH</span>=$$ANDROID_PACKAGE_SOURCE_DIR
+
+<span style="color: #00ffff;">extraclean.commands</span> = rm -rv $$ANDROID_PACKAGE_SOURCE_DIR/libs $$ANDROID_PACKAGE_SOURCE_DIR/obj
+<span style="color: #00ffff;">clean.depends</span> += extraclean
+
+<span style="color: #00ffff;">QMAKE_EXTRA_TARGETS</span> += gst clean extraclean
+<span style="color: #00ffff;">PRE_TARGETDEPS</span> += $$ANDROID_PACKAGE_SOURCE_DIR/libs/armeabi-v7a/libgstreamer_android.so
+</pre>
+</div>
+
+<p>
+since we don't have access to the environment variables during our custom
+target, I wrote a custom bash script to first prepare the environment (the
+Android relate paths), and then run the <code>ndk-build</code> for me:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-bash"><span style="color: #b0c4de;">source</span> ~/.bashrc
+ndk-build $<span style="color: #00ffff;">@</span>
+</pre>
+</div>
+
+<p>
+finally we have the requirements to build the `libgstreamer<sub>android.so</sub>` based on
+the make file we added to <code>android/jni/Android.mk</code>.
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-org04bb451" class="outline-2">
+<h2 id="org04bb451">Build the Gstreamer libraries including the Qt bindings</h2>
+<div class="outline-text-2" id="text-org04bb451">
+<p>
+The approach that I followed was to use the <code>cerbero</code> the build system which is
+provided by GStreamer team to create custom bundles of GStreamer.
+</p>
+
+<p>
+to do so, first we need to checkout the <code>cerbero</code> from it's <a href="https://gitlab.freedesktop.org/gstreamer/cerbero">repository</a> and
+checkout the version we want to build.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-bash">$ git clone https://gitlab.freedesktop.org/gstreamer/cerbero
+$ cd cerbero
+$ git checkout 1.20.1
+</pre>
+</div>
+
+<p>
+then we need to bootstrap the <code>cerbero</code> to have all of it's requirements. we
+also need identify our cross compile configuration using one of the
+configurations provided inside <code>config</code> folder. I used the
+<code>config/cross-android-universal.cbc</code> config.
+</p>
+
+<p>
+<b>Note</b>: in my experience I faced errors about missing python pacakges (<a href="https://pypi.org/project/distro/"><code>distro</code></a>), my
+host OS (Manjaro) was also undefined for the bootstrap script, so I add it
+manually, based on the error messages that I received.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-bash">$ ./cerbero-uninstalled -c config/cross-android-universal.cbc bootstrap
+</pre>
+</div>
+
+<p>
+after preparing the environment, we go for building our custom GStreamer
+bundle. to do so we use the <code>package</code> command and add the <code>qt5</code> variant to list
+of it's default recipes.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-bash"><span style="color: #b0c4de;">export</span> <span style="color: #00ffff;">QMAKE</span>=<span style="color: #8AE234;">'/path/to/Qt/5.15.2/android/bin/qmake'</span>
+$ ./cerbero-uninstalled -c config/cross-android-universal.cbc -v qt5 package gstreamer-1.0
+</pre>
+</div>
+
+
+<p>
+following the above steps, we have a
+<code>gstreamer-1.0-android-universal-1.20.1.tar.xz` file which including the Qt5
+bindings. they will be added as ~GSTREAMER_PLUGINS_QT5</code> plugin to the list of
+plugins.
+</p>
+
+<p>
+however when I trying to create the <code>libgstreamer_android.so</code> using this bundle,
+we receive following linker errors, which I didn't have a chance to fix them
+yet.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-text">...
+../gstqsgtexture.cc:36: error: undefined reference to 'QSGTexture::QSGTexture()'
+../gstqsgtexture.cc:36: error: undefined reference to 'QOpenGLFunctions::QOpenGLFunctions()'
+../gstqsgtexture.cc:40: error: undefined reference to 'QOpenGLFunctions::initializeOpenGLFunctions()'
+../gstqsgtexture.cc:55: error: undefined reference to 'QSGTexture::~QSGTexture()'
+../gstqsgtexture.cc:64: error: undefined reference to 'QOpenGLContext::functions() const'
+../gstqsgtexture.cc:67: error: undefined reference to 'QSGTexture::~QSGTexture()'
+../gstqsgtexture.cc:67: error: undefined reference to 'QSGTexture::~QSGTexture()'
+../gstqsgtexture.cc:172: error: undefined reference to 'QOpenGLContext::functions() const'
+armeabi-v7a/moc_gstqsgtexture.cpp:88: error: undefined reference to 'QSGTexture::qt_metacast(char const*)'
+armeabi-v7a/moc_gstqsgtexture.cpp:93: error: undefined reference to 'QSGTexture::qt_metacall(QMetaObject::Call, int, void**)'
+/home/reza/QtProjects/GStreamerTest/gstreamer-1.0/armv7/lib/gstreamer-1.0/libgstqmlgl.a(moc_gstqsgtexture.o):moc_gstqsgtexture.cpp:GstQSGTexture::staticMetaObject: error: undefined reference to 'QSGTexture::staticMetaObject'
+/home/reza/QtProjects/GStreamerTest/gstreamer-1.0/armv7/lib/gstreamer-1.0/libgstqmlgl.a(moc_gstqsgtexture.o):moc_gstqsgtexture.cpp:vtable for GstQSGTexture: error: undefined reference to 'QSGTexture::normalizedTextureSubRect() const'
+/home/reza/QtProjects/GStreamerTest/gstreamer-1.0/armv7/lib/gstreamer-1.0/libgstqmlgl.a(moc_gstqsgtexture.o):moc_gstqsgtexture.cpp:vtable for GstQSGTexture: error: undefined reference to 'QSGTexture::isAtlasTexture() const'
+/home/reza/QtProjects/GStreamerTest/gstreamer-1.0/armv7/lib/gstreamer-1.0/libgstqmlgl.a(moc_gstqsgtexture.o):moc_gstqsgtexture.cpp:vtable for GstQSGTexture: error: undefined reference to 'QSGTexture::removedFromAtlas() const'
+/home/reza/QtProjects/GStreamerTest/gstreamer-1.0/armv7/lib/gstreamer-1.0/libgstqmlgl.a(moc_gstqsgtexture.o):moc_gstqsgtexture.cpp:typeinfo for GstQSGTexture: error: undefined reference to 'typeinfo for QSGTexture'
+clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+</pre>
+</div>
+</div>
+</div>
+<div class="taglist"><a href="https://ramajd.github.io/tags.html">Tags</a>: <a href="https://ramajd.github.io/tag-android.html">android</a> <a href="https://ramajd.github.io/tag-gstreamer.html">gstreamer</a> <a href="https://ramajd.github.io/tag-qt.html">Qt</a> </div>]]></description>
+  <category><![CDATA[android]]></category>
+  <category><![CDATA[gstreamer]]></category>
+  <category><![CDATA[Qt]]></category>
+  <link>https://ramajd.github.io/2022-04-19-qt-bindings-of-gstreamer-on-android-(failed-experience).html</link>
+  <pubDate>Tue, 19 Apr 2022 18:46:00 +0430</pubDate>
+</item>
 <item>
   <title><![CDATA[Guix: how to set package udev rules]]></title>
   <description><![CDATA[

@@ -1,0 +1,122 @@
+#+title: Qt bindings of GStreamer on Android (failed experience)
+#+date: <2022-04-19 18:46>
+#+description: Issues related to Qt bindings of Gstreamer on Android
+#+filetags: android gstreamer Qt
+
+#+BEGIN_QUOTE
+for the ones who may read this note, unfortunately I couldn't succeed to
+provide a working solution. however I decided to write my findings here, hat
+hopefully help someone else that wants to cdo the same thing in the future.
+#+END_QUOTE
+
+There are two things that we should consider when we want to start our journay:
+- first thing is that all the fancy automated tools provided by GStreamer team for
+  Android doesn't work here.
+- he second is that the Qt bindings are not available in the official pre-built
+  binaries and we need to create our own custom version of gstreamer library.
+
+
+** Build the ~libgstreamer_android.so~
+Official tutorials of Gstreamer, are based on Android NDK build system, which
+automatically build and deploy the ~libgstreamer_android.so~ library (absolutely
+without Qt support!) to the target APK based on the plugins has been chosen
+inside make file.
+
+we need to replace it by custom targets in our ~qmake~ project file. to do so we
+defined two custom targets to build and cleanup the ~libgstreamer_android.so~
+file for us:
+
+#+BEGIN_SRC makefile
+  GSTREAMER_ROOT_ANDROID = $$_PRO_FILE_PWD_/gstreamer-1.0/armv7
+
+  gst.target = $$ANDROID_PACKAGE_SOURCE_DIR/libs/armeabi-v7a/libgstreamer_android.so
+  gst.commands = cd $$ANDROID_PACKAGE_SOURCE_DIR; \
+                 ./build_gstreamer.sh TARGET_ARCH_ABI=armeabi-v7a \
+                 GSTREAMER_ROOT_ANDROID=$$GSTREAMER_ROOT_ANDROID \
+                 NDK_PROJECT_PATH=$$ANDROID_PACKAGE_SOURCE_DIR
+
+  extraclean.commands = rm -rv $$ANDROID_PACKAGE_SOURCE_DIR/libs $$ANDROID_PACKAGE_SOURCE_DIR/obj
+  clean.depends += extraclean
+
+  QMAKE_EXTRA_TARGETS += gst clean extraclean
+  PRE_TARGETDEPS += $$ANDROID_PACKAGE_SOURCE_DIR/libs/armeabi-v7a/libgstreamer_android.so
+#+END_SRC
+
+since we don't have access to the environment variables during our custom
+target, I wrote a custom bash script to first prepare the environment (the
+Android relate paths), and then run the ~ndk-build~ for me:
+
+#+BEGIN_SRC bash
+source ~/.bashrc
+ndk-build $@
+#+END_SRC
+
+finally we have the requirements to build the `libgstreamer_android.so` based on
+the make file we added to ~android/jni/Android.mk~.
+
+
+** Build the Gstreamer libraries including the Qt bindings
+
+The approach that I followed was to use the ~cerbero~ the build system which is
+provided by GStreamer team to create custom bundles of GStreamer.
+
+to do so, first we need to checkout the ~cerbero~ from it's [[https://gitlab.freedesktop.org/gstreamer/cerbero][repository]] and
+checkout the version we want to build.
+
+#+BEGIN_SRC bash
+  $ git clone https://gitlab.freedesktop.org/gstreamer/cerbero
+  $ cd cerbero
+  $ git checkout 1.20.1
+#+END_SRC
+
+then we need to bootstrap the ~cerbero~ to have all of it's requirements. we
+also need identify our cross compile configuration using one of the
+configurations provided inside ~config~ folder. I used the
+~config/cross-android-universal.cbc~ config.
+
+*Note*: in my experience I faced errors about missing python pacakges ([[https://pypi.org/project/distro/][~distro~]]), my
+host OS (Manjaro) was also undefined for the bootstrap script, so I add it
+manually, based on the error messages that I received.
+
+#+BEGIN_SRC bash
+  $ ./cerbero-uninstalled -c config/cross-android-universal.cbc bootstrap
+#+END_SRC
+
+after preparing the environment, we go for building our custom GStreamer
+bundle. to do so we use the ~package~ command and add the ~qt5~ variant to list
+of it's default recipes.
+
+#+BEGIN_SRC bash
+  export QMAKE='/path/to/Qt/5.15.2/android/bin/qmake'
+  $ ./cerbero-uninstalled -c config/cross-android-universal.cbc -v qt5 package gstreamer-1.0
+#+END_SRC
+
+
+following the above steps, we have a
+~gstreamer-1.0-android-universal-1.20.1.tar.xz` file which including the Qt5
+bindings. they will be added as ~GSTREAMER_PLUGINS_QT5~ plugin to the list of
+plugins.
+
+however when I trying to create the ~libgstreamer_android.so~ using this bundle,
+we receive following linker errors, which I didn't have a chance to fix them
+yet.
+
+#+BEGIN_SRC text
+  ...
+  ../gstqsgtexture.cc:36: error: undefined reference to 'QSGTexture::QSGTexture()'
+  ../gstqsgtexture.cc:36: error: undefined reference to 'QOpenGLFunctions::QOpenGLFunctions()'
+  ../gstqsgtexture.cc:40: error: undefined reference to 'QOpenGLFunctions::initializeOpenGLFunctions()'
+  ../gstqsgtexture.cc:55: error: undefined reference to 'QSGTexture::~QSGTexture()'
+  ../gstqsgtexture.cc:64: error: undefined reference to 'QOpenGLContext::functions() const'
+  ../gstqsgtexture.cc:67: error: undefined reference to 'QSGTexture::~QSGTexture()'
+  ../gstqsgtexture.cc:67: error: undefined reference to 'QSGTexture::~QSGTexture()'
+  ../gstqsgtexture.cc:172: error: undefined reference to 'QOpenGLContext::functions() const'
+  armeabi-v7a/moc_gstqsgtexture.cpp:88: error: undefined reference to 'QSGTexture::qt_metacast(char const*)'
+  armeabi-v7a/moc_gstqsgtexture.cpp:93: error: undefined reference to 'QSGTexture::qt_metacall(QMetaObject::Call, int, void**)'
+  /home/reza/QtProjects/GStreamerTest/gstreamer-1.0/armv7/lib/gstreamer-1.0/libgstqmlgl.a(moc_gstqsgtexture.o):moc_gstqsgtexture.cpp:GstQSGTexture::staticMetaObject: error: undefined reference to 'QSGTexture::staticMetaObject'
+  /home/reza/QtProjects/GStreamerTest/gstreamer-1.0/armv7/lib/gstreamer-1.0/libgstqmlgl.a(moc_gstqsgtexture.o):moc_gstqsgtexture.cpp:vtable for GstQSGTexture: error: undefined reference to 'QSGTexture::normalizedTextureSubRect() const'
+  /home/reza/QtProjects/GStreamerTest/gstreamer-1.0/armv7/lib/gstreamer-1.0/libgstqmlgl.a(moc_gstqsgtexture.o):moc_gstqsgtexture.cpp:vtable for GstQSGTexture: error: undefined reference to 'QSGTexture::isAtlasTexture() const'
+  /home/reza/QtProjects/GStreamerTest/gstreamer-1.0/armv7/lib/gstreamer-1.0/libgstqmlgl.a(moc_gstqsgtexture.o):moc_gstqsgtexture.cpp:vtable for GstQSGTexture: error: undefined reference to 'QSGTexture::removedFromAtlas() const'
+  /home/reza/QtProjects/GStreamerTest/gstreamer-1.0/armv7/lib/gstreamer-1.0/libgstqmlgl.a(moc_gstqsgtexture.o):moc_gstqsgtexture.cpp:typeinfo for GstQSGTexture: error: undefined reference to 'typeinfo for QSGTexture'
+  clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+#+END_SRC

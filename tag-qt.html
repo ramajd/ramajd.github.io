@@ -22,7 +22,7 @@
   </ul>
 </div></div>
 <div id="content">
-
+<h1 class="title">Posts tagged "Qt":</h1>
 <div class="post-date">19 Apr 2022</div><h1 class="post-title"><a href="https://ramajd.github.io/2022-04-19-qt-bindings-of-gstreamer-on-android-(failed-experience).html">Qt bindings of GStreamer on Android (failed experience)</a></h1>
 <blockquote>
 <p>
@@ -182,103 +182,7 @@ clang++: error: linker command failed with exit code 1 (use -v to see invocation
 </div>
 </div>
 </div>
-<div class="taglist"><a href="https://ramajd.github.io/tags.html">Tags</a>: <a href="https://ramajd.github.io/tag-android.html">android</a> <a href="https://ramajd.github.io/tag-gstreamer.html">gstreamer</a> <a href="https://ramajd.github.io/tag-qt.html">Qt</a> </div>
-<div class="post-date">13 Dec 2021</div><h1 class="post-title"><a href="https://ramajd.github.io/2021-12-13-guix-how-to-set-package-udev-rules.html">Guix: how to set package udev rules</a></h1>
-<blockquote>
-<p>
-Just read a <i><a href="https://lists.gnu.org/archive/html/guix-devel/2021-12/msg00095.html">thread</a></i> on guix mailing list, about <b>adding udev rules</b> for a
-package. in order to have an fixed reference about it, I decided to post it
-here.
-</p>
-</blockquote>
-
-<p>
-adding <code>udev</code> rules for a guix package is as easy as adding it to the
-<code>&lt;out&gt;/lib/udev/rules.d/</code> directory. so we can either add it as an <code>INSTALL</code>
-rule in our <code>CMakefile.txt</code> or add it to manually install the rules as part of
-our package <code>install</code> phase:
-</p>
-
-<div class="org-src-container">
-<pre class="src src-scheme">(<span style="color: #729FCF;">define-public</span> <span style="color: #00ffff;">package-name</span>
-  (package
-   ...
-   (arguments
-    `(<span style="color: #b0c4de;">#:phases</span>
-      (modify-phases %standard-phases
-       (add-after 'unpack 'patch-udev-rules
-         (<span style="color: #729FCF;">lambda*</span> (<span style="color: #b0c4de;">#:key</span> outputs <span style="color: #b0c4de;">#:allow-other-keys</span>)
-           (<span style="color: #729FCF;">let</span> ((out (assoc-ref outputs <span style="color: #8AE234;">"out"</span>)))
-             (substitute* <span style="color: #8AE234;">"CMakefile.txt"</span>
-                          ((<span style="color: #8AE234;">"/ib/udev/rules.d"</span>)
-                           (string-append out <span style="color: #8AE234;">"/lib/udev/rules.d"</span>)))
-             #t))))))
-   ...))
-</pre>
-</div>
-
-<div class="org-src-container">
-<pre class="src src-scheme">(<span style="color: #729FCF;">define-public</span> <span style="color: #00ffff;">package-name</span>
-  (package
-   ...
-   (arguments
-    `(<span style="color: #b0c4de;">#:phases</span>
-      (modify-phases %standard-phases
-       (add-after 'install 'install-udev-rules
-         (<span style="color: #729FCF;">lambda*</span> (<span style="color: #b0c4de;">#:key</span> outputs <span style="color: #b0c4de;">#:allow-other-keys</span>)
-           (<span style="color: #729FCF;">let</span> ((out (assoc-ref outputs <span style="color: #8AE234;">"out"</span>)))
-             (mkdir-p (string-append out <span style="color: #8AE234;">"/lib/udev/rules.d"</span>))
-             (copy-file <span style="color: #8AE234;">"123-my-custom-udev.rules"</span>
-                        (string-append out
-                                       <span style="color: #8AE234;">"/lib/udev/rules.d/"</span>
-                                       <span style="color: #8AE234;">"123-my-custom-udev.rules"</span>))
-             #t))))))
-   ...
-   ))
-</pre>
-</div>
-<div class="taglist"><a href="https://ramajd.github.io/tags.html">Tags</a>: <a href="https://ramajd.github.io/tag-guix.html">guix</a> </div>
-<div class="post-date">04 Dec 2020</div><h1 class="post-title"><a href="https://ramajd.github.io/2020-12-04-new-start.html">New Start</a></h1>
-<p>
-After a while finally I decided to restore back my personal blog, writting down
-challenges I'm facing with, during my daily work. this time I decided to write in
-English, might be more useful for the ones who might face same issues.
-</p>
-
-<p>
-One of the challenges that I faced was to choose a proper platform to build my
-blog on top of. using blog services like <i>Blogger</i> or <i>Wordpress</i> previously
-they seemd to be kind of over-qualified for my needs. so I decided to switch to
-static blog generators this time.
-</p>
-
-<p>
-It's been a while that I'm using <i><a href="https://guix.gnu.org">GNU Guix</a></i> on my work and it was an opportunity
-for me to use <i><a href="https://www.gnu.org/software/emacs/">GNU Emacs</a></i> as my common text editor and IDE. working more with
-Emacs, I love this editor much more.
-</p>
-
-
-<figure id="orgfd7552d">
-<img src="./static/images/emacs_gnu_org_mode.png" alt="emacs_gnu_org_mode.png">
-
-</figure>
-
-<p>
-Since for each problem you face, Emacs provides you a solution, it also has a
-solution for my blogging Problem, <i><a href="https://orgmode.org/">Org Mode</a></i>. search for Emacs blogging tools,
-there are a bunch of packages already available, and since I was looking for a
-simple tool to allow me setup my blog rapidly, I decided to use
-<i><a href="https://github.com/bastibe/org-static-blog">org-static-blog</a></i>.
-</p>
-
-<p>
-In order to setup my blog, I just need to add an <a href="https://github.com/bastibe/org-static-blog#examples">initial configuration</a> to my
-<code>init.el</code> file, create new post using <code>org-static-blog-create-new-post</code> and run
-<code>org-static-blog-publish</code> to generate html files. after that the only thing that
-I need to do was to publish generated files to <a href="https://pages.github.com/">github pages</a>.
-</p>
-<div class="taglist"><a href="https://ramajd.github.io/tags.html">Tags</a>: <a href="https://ramajd.github.io/tag-personal.html">personal</a> </div><div id="archive">
+<div class="taglist"><a href="https://ramajd.github.io/tags.html">Tags</a>: <a href="https://ramajd.github.io/tag-android.html">android</a> <a href="https://ramajd.github.io/tag-gstreamer.html">gstreamer</a> <a href="https://ramajd.github.io/tag-qt.html">Qt</a> </div><div id="archive">
 <a href="https://ramajd.github.io/archive.html">Other posts</a>
 </div>
 </div>
