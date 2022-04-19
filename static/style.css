@@ -4,6 +4,7 @@ a, a:visited { color: #17a7fd; }
 a:hover { color: #0f7bbb; }
 .post-title a {
     text-decoration: unset;
+    line-height: 1.1em;
 }
 
 /* Layout definition  */
@@ -66,8 +67,9 @@ body {
     padding: 0.5em;
     background-color: #000000;
     color: #ffffff;
+    overflow: auto;
 }
-p > code {
+code {
     color: #313131;
     background-color: #f0f0f0;
     padding: 2px;
