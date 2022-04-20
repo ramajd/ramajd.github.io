@@ -28,7 +28,9 @@
 <p>
 for the ones who may read this note, unfortunately I couldn't succeed to
 provide a working solution. however I decided to write my findings here, hat
-hopefully help someone else that wants to cdo the same thing in the future.
+hopefully help someone else that wants to cdo the same thing in the future. the
+source code related to my tries is located on
+<a href="https://github.com/ramajd/gstreamer-qt-android">this repository</a>.
 </p>
 </blockquote>
 
@@ -43,9 +45,9 @@ binaries and we need to create our own custom version of gstreamer library.</li>
 </ul>
 
 
-<div id="outline-container-org30f02b8" class="outline-2">
-<h2 id="org30f02b8">Build the <code>libgstreamer_android.so</code></h2>
-<div class="outline-text-2" id="text-org30f02b8">
+<div id="outline-container-org7bb432b" class="outline-2">
+<h2 id="org7bb432b">Build the <code>libgstreamer_android.so</code></h2>
+<div class="outline-text-2" id="text-org7bb432b">
 <p>
 Official tutorials of Gstreamer, are based on Android NDK build system, which
 automatically build and deploy the <code>libgstreamer_android.so</code> library (absolutely
@@ -96,9 +98,9 @@ the make file we added to <code>android/jni/Android.mk</code>.
 </div>
 
 
-<div id="outline-container-org04bb451" class="outline-2">
-<h2 id="org04bb451">Build the Gstreamer libraries including the Qt bindings</h2>
-<div class="outline-text-2" id="text-org04bb451">
+<div id="outline-container-org4ec7752" class="outline-2">
+<h2 id="org4ec7752">Build the Gstreamer libraries including the Qt bindings</h2>
+<div class="outline-text-2" id="text-org4ec7752">
 <p>
 The approach that I followed was to use the <code>cerbero</code> the build system which is
 provided by GStreamer team to create custom bundles of GStreamer.

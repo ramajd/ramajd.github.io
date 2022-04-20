@@ -6,7 +6,9 @@
 #+BEGIN_QUOTE
 for the ones who may read this note, unfortunately I couldn't succeed to
 provide a working solution. however I decided to write my findings here, hat
-hopefully help someone else that wants to cdo the same thing in the future.
+hopefully help someone else that wants to cdo the same thing in the future. the
+source code related to my tries is located on
+[[https://github.com/ramajd/gstreamer-qt-android][this repository]].
 #+END_QUOTE
 
 There are two things that we should consider when we want to start our journay:
