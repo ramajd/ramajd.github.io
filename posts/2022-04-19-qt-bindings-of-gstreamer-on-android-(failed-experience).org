@@ -122,3 +122,12 @@ yet.
   /home/reza/QtProjects/GStreamerTest/gstreamer-1.0/armv7/lib/gstreamer-1.0/libgstqmlgl.a(moc_gstqsgtexture.o):moc_gstqsgtexture.cpp:typeinfo for GstQSGTexture: error: undefined reference to 'typeinfo for QSGTexture'
   clang++: error: linker command failed with exit code 1 (use -v to see invocation)
 #+END_SRC
+
+** References
+these are the usefull references that I found during my journay of working on
+this issue:
+
+- a helpful blog post about: [[http://pepijndevos.nl/2018/10/02/qtgstreamerddsandroid.html][Qt+GStreamer+DDS+Android]]
+- [[https://github.com/ArmsOfSorrow/gstreamer-android-qt-app]]
+- [[https://github.com/ystreet/qt-gstreamer-android]]
+- [[https://gstreamer.freedesktop.org/documentation/installing/building-from-source-using-cerbero.html?gi-language=c][GStreamer reference about how to use the cerbero]]

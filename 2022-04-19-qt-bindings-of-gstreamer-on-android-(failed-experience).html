@@ -45,9 +45,9 @@ binaries and we need to create our own custom version of gstreamer library.</li>
 </ul>
 
 
-<div id="outline-container-org7bb432b" class="outline-2">
-<h2 id="org7bb432b">Build the <code>libgstreamer_android.so</code></h2>
-<div class="outline-text-2" id="text-org7bb432b">
+<div id="outline-container-orgcca2031" class="outline-2">
+<h2 id="orgcca2031">Build the <code>libgstreamer_android.so</code></h2>
+<div class="outline-text-2" id="text-orgcca2031">
 <p>
 Official tutorials of Gstreamer, are based on Android NDK build system, which
 automatically build and deploy the <code>libgstreamer_android.so</code> library (absolutely
@@ -98,9 +98,9 @@ the make file we added to <code>android/jni/Android.mk</code>.
 </div>
 
 
-<div id="outline-container-org4ec7752" class="outline-2">
-<h2 id="org4ec7752">Build the Gstreamer libraries including the Qt bindings</h2>
-<div class="outline-text-2" id="text-org4ec7752">
+<div id="outline-container-org7d7c7dc" class="outline-2">
+<h2 id="org7d7c7dc">Build the Gstreamer libraries including the Qt bindings</h2>
+<div class="outline-text-2" id="text-org7d7c7dc">
 <p>
 The approach that I followed was to use the <code>cerbero</code> the build system which is
 provided by GStreamer team to create custom bundles of GStreamer.
@@ -182,6 +182,23 @@ armeabi-v7a/moc_gstqsgtexture.cpp:93: error: undefined reference to 'QSGTexture:
 clang++: error: linker command failed with exit code 1 (use -v to see invocation)
 </pre>
 </div>
+</div>
+</div>
+
+<div id="outline-container-orge496e6c" class="outline-2">
+<h2 id="orge496e6c">References</h2>
+<div class="outline-text-2" id="text-orge496e6c">
+<p>
+these are the usefull references that I found during my journay of working on
+this issue:
+</p>
+
+<ul class="org-ul">
+<li>a helpful blog post about: <a href="http://pepijndevos.nl/2018/10/02/qtgstreamerddsandroid.html">Qt+GStreamer+DDS+Android</a></li>
+<li><a href="https://github.com/ArmsOfSorrow/gstreamer-android-qt-app">https://github.com/ArmsOfSorrow/gstreamer-android-qt-app</a></li>
+<li><a href="https://github.com/ystreet/qt-gstreamer-android">https://github.com/ystreet/qt-gstreamer-android</a></li>
+<li><a href="https://gstreamer.freedesktop.org/documentation/installing/building-from-source-using-cerbero.html?gi-language=c">GStreamer reference about how to use the cerbero</a></li>
+</ul>
 </div>
 </div>
 <div class="taglist"><a href="https://ramajd.github.io/tags.html">Tags</a>: <a href="https://ramajd.github.io/tag-android.html">android</a> <a href="https://ramajd.github.io/tag-gstreamer.html">gstreamer</a> <a href="https://ramajd.github.io/tag-qt.html">Qt</a> </div></div>
