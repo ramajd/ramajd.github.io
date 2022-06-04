@@ -53,7 +53,7 @@ source ~/.bashrc
 ndk-build $@
 #+END_SRC
 
-finally we have the requirements to build the `libgstreamer_android.so` based on
+finally we have the requirements to build the ~libgstreamer_android.so~ based on
 the make file we added to ~android/jni/Android.mk~.
 
 
