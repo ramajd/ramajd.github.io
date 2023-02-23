@@ -16,7 +16,7 @@
 <body>
 <div id="preamble" class="status">
 <div class="header">
-  <h1><a href="/">Personal Notes by ramajd</a></h1>
+  <h1><a href="/">My Personal Notes</a></h1>
   <ul>
     <li><a href="/">Blog</a>
     <li><a href="/about.html">About</a>
@@ -40,38 +40,38 @@ our package <code>install</code> phase:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-scheme">(<span style="color: #729FCF;">define-public</span> <span style="color: #00ffff;">package-name</span>
+<pre class="src src-scheme">(<span style="color: #81A1C1;">define-public</span> <span style="color: #88C0D0;">package-name</span>
   (package
    ...
    (arguments
-    `(<span style="color: #b0c4de;">#:phases</span>
+    `(<span style="color: #81A1C1;">#:phases</span>
       (modify-phases %standard-phases
        (add-after 'unpack 'patch-udev-rules
-         (<span style="color: #729FCF;">lambda*</span> (<span style="color: #b0c4de;">#:key</span> outputs <span style="color: #b0c4de;">#:allow-other-keys</span>)
-           (<span style="color: #729FCF;">let</span> ((out (assoc-ref outputs <span style="color: #8AE234;">"out"</span>)))
-             (substitute* <span style="color: #8AE234;">"CMakefile.txt"</span>
-                          ((<span style="color: #8AE234;">"/ib/udev/rules.d"</span>)
-                           (string-append out <span style="color: #8AE234;">"/lib/udev/rules.d"</span>)))
+         (lambda* (<span style="color: #81A1C1;">#:key</span> outputs <span style="color: #81A1C1;">#:allow-other-keys</span>)
+           (<span style="color: #81A1C1;">let</span> ((out (assoc-ref outputs <span style="color: #A3BE8C;">"out"</span>)))
+             (substitute* <span style="color: #A3BE8C;">"CMakefile.txt"</span>
+                          ((<span style="color: #A3BE8C;">"/ib/udev/rules.d"</span>)
+                           (string-append out <span style="color: #A3BE8C;">"/lib/udev/rules.d"</span>)))
              #t))))))
    ...))
 </pre>
 </div>
 
 <div class="org-src-container">
-<pre class="src src-scheme">(<span style="color: #729FCF;">define-public</span> <span style="color: #00ffff;">package-name</span>
+<pre class="src src-scheme">(<span style="color: #81A1C1;">define-public</span> <span style="color: #88C0D0;">package-name</span>
   (package
    ...
    (arguments
-    `(<span style="color: #b0c4de;">#:phases</span>
+    `(<span style="color: #81A1C1;">#:phases</span>
       (modify-phases %standard-phases
        (add-after 'install 'install-udev-rules
-         (<span style="color: #729FCF;">lambda*</span> (<span style="color: #b0c4de;">#:key</span> outputs <span style="color: #b0c4de;">#:allow-other-keys</span>)
-           (<span style="color: #729FCF;">let</span> ((out (assoc-ref outputs <span style="color: #8AE234;">"out"</span>)))
-             (mkdir-p (string-append out <span style="color: #8AE234;">"/lib/udev/rules.d"</span>))
-             (copy-file <span style="color: #8AE234;">"123-my-custom-udev.rules"</span>
+         (lambda* (<span style="color: #81A1C1;">#:key</span> outputs <span style="color: #81A1C1;">#:allow-other-keys</span>)
+           (<span style="color: #81A1C1;">let</span> ((out (assoc-ref outputs <span style="color: #A3BE8C;">"out"</span>)))
+             (mkdir-p (string-append out <span style="color: #A3BE8C;">"/lib/udev/rules.d"</span>))
+             (copy-file <span style="color: #A3BE8C;">"123-my-custom-udev.rules"</span>
                         (string-append out
-                                       <span style="color: #8AE234;">"/lib/udev/rules.d/"</span>
-                                       <span style="color: #8AE234;">"123-my-custom-udev.rules"</span>))
+                                       <span style="color: #A3BE8C;">"/lib/udev/rules.d/"</span>
+                                       <span style="color: #A3BE8C;">"123-my-custom-udev.rules"</span>))
              #t))))))
    ...
    ))

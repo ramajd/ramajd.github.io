@@ -6,7 +6,7 @@
       type="application/rss+xml"
       href="https://ramajd.github.io/rss.xml"
       title="RSS feed for https://ramajd.github.io/">
-<title>Personal Notes by ramajd</title>
+<title>My Personal Notes</title>
 
 <meta name="author" content="Reza Alizadeh Majd">
 <meta name="referrer" content="no-referrer">
@@ -15,7 +15,7 @@
 <body>
 <div id="preamble" class="status">
 <div class="header">
-  <h1><a href="/">Personal Notes by ramajd</a></h1>
+  <h1><a href="/">My Personal Notes</a></h1>
   <ul>
     <li><a href="/">Blog</a>
     <li><a href="/about.html">About</a>
@@ -45,9 +45,9 @@ binaries and we need to create our own custom version of gstreamer library.</li>
 </ul>
 
 
-<div id="outline-container-org43c3a40" class="outline-2">
-<h2 id="org43c3a40">Build the <code>libgstreamer_android.so</code></h2>
-<div class="outline-text-2" id="text-org43c3a40">
+<div id="outline-container-org18bc2e1" class="outline-2">
+<h2 id="org18bc2e1">Build the <code>libgstreamer_android.so</code></h2>
+<div class="outline-text-2" id="text-org18bc2e1">
 <p>
 Official tutorials of Gstreamer, are based on Android NDK build system, which
 automatically build and deploy the <code>libgstreamer_android.so</code> library (absolutely
@@ -62,19 +62,19 @@ file for us:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-makefile"><span style="color: #00ffff;">GSTREAMER_ROOT_ANDROID</span> = $$_PRO_FILE_PWD_/gstreamer-1.0/armv7
+<pre class="src src-makefile"><span style="color: #D8DEE9;">GSTREAMER_ROOT_ANDROID</span> = $$_PRO_FILE_PWD_/gstreamer-1.0/armv7
 
-<span style="color: #00ffff;">gst.target</span> = $$ANDROID_PACKAGE_SOURCE_DIR/libs/armeabi-v7a/libgstreamer_android.so
-<span style="color: #00ffff;">gst.commands</span> = cd $$ANDROID_PACKAGE_SOURCE_DIR; \
+<span style="color: #D8DEE9;">gst.target</span> = $$ANDROID_PACKAGE_SOURCE_DIR/libs/armeabi-v7a/libgstreamer_android.so
+<span style="color: #D8DEE9;">gst.commands</span> = cd $$ANDROID_PACKAGE_SOURCE_DIR; \
                ./build_gstreamer.sh TARGET_ARCH_ABI=armeabi-v7a \
-               <span style="color: #00ffff;">GSTREAMER_ROOT_ANDROID</span>=$$GSTREAMER_ROOT_ANDROID \
-               <span style="color: #00ffff;">NDK_PROJECT_PATH</span>=$$ANDROID_PACKAGE_SOURCE_DIR
+               <span style="color: #D8DEE9;">GSTREAMER_ROOT_ANDROID</span>=$$GSTREAMER_ROOT_ANDROID \
+               <span style="color: #D8DEE9;">NDK_PROJECT_PATH</span>=$$ANDROID_PACKAGE_SOURCE_DIR
 
-<span style="color: #00ffff;">extraclean.commands</span> = rm -rv $$ANDROID_PACKAGE_SOURCE_DIR/libs $$ANDROID_PACKAGE_SOURCE_DIR/obj
-<span style="color: #00ffff;">clean.depends</span> += extraclean
+<span style="color: #D8DEE9;">extraclean.commands</span> = rm -rv $$ANDROID_PACKAGE_SOURCE_DIR/libs $$ANDROID_PACKAGE_SOURCE_DIR/obj
+<span style="color: #D8DEE9;">clean.depends</span> += extraclean
 
-<span style="color: #00ffff;">QMAKE_EXTRA_TARGETS</span> += gst clean extraclean
-<span style="color: #00ffff;">PRE_TARGETDEPS</span> += $$ANDROID_PACKAGE_SOURCE_DIR/libs/armeabi-v7a/libgstreamer_android.so
+<span style="color: #D8DEE9;">QMAKE_EXTRA_TARGETS</span> += gst clean extraclean
+<span style="color: #D8DEE9;">PRE_TARGETDEPS</span> += $$ANDROID_PACKAGE_SOURCE_DIR/libs/armeabi-v7a/libgstreamer_android.so
 </pre>
 </div>
 
@@ -85,8 +85,8 @@ Android relate paths), and then run the <code>ndk-build</code> for me:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-bash"><span style="color: #b0c4de;">source</span> ~/.bashrc
-ndk-build $<span style="color: #00ffff;">@</span>
+<pre class="src src-bash"><span style="color: #81A1C1;">source</span> ~/.bashrc
+ndk-build $<span style="color: #D8DEE9;">@</span>
 </pre>
 </div>
 
@@ -98,9 +98,9 @@ the make file we added to <code>android/jni/Android.mk</code>.
 </div>
 
 
-<div id="outline-container-orgaf5aac0" class="outline-2">
-<h2 id="orgaf5aac0">Build the Gstreamer libraries including the Qt bindings</h2>
-<div class="outline-text-2" id="text-orgaf5aac0">
+<div id="outline-container-org2ea92ee" class="outline-2">
+<h2 id="org2ea92ee">Build the Gstreamer libraries including the Qt bindings</h2>
+<div class="outline-text-2" id="text-org2ea92ee">
 <p>
 The approach that I followed was to use the <code>cerbero</code> the build system which is
 provided by GStreamer team to create custom bundles of GStreamer.
@@ -143,7 +143,7 @@ of it's default recipes.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-bash"><span style="color: #b0c4de;">export</span> <span style="color: #00ffff;">QMAKE</span>=<span style="color: #8AE234;">'/path/to/Qt/5.15.2/android/bin/qmake'</span>
+<pre class="src src-bash"><span style="color: #81A1C1;">export</span> <span style="color: #D8DEE9;">QMAKE</span>=<span style="color: #A3BE8C;">'/path/to/Qt/5.15.2/android/bin/qmake'</span>
 $ ./cerbero-uninstalled -c config/cross-android-universal.cbc -v qt5 package gstreamer-1.0
 </pre>
 </div>
@@ -185,9 +185,9 @@ clang++: error: linker command failed with exit code 1 (use -v to see invocation
 </div>
 </div>
 
-<div id="outline-container-orgd6c054b" class="outline-2">
-<h2 id="orgd6c054b">References</h2>
-<div class="outline-text-2" id="text-orgd6c054b">
+<div id="outline-container-orga835c5d" class="outline-2">
+<h2 id="orga835c5d">References</h2>
+<div class="outline-text-2" id="text-orga835c5d">
 <p>
 these are the usefull references that I found during my journay of working on
 this issue:
