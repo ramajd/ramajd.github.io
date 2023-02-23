@@ -1,0 +1,206 @@
+#+title: Hash Maps in C
+#+date: <2023-02-16 10:57>
+#+description: 
+#+filetags: programming c hash-map
+
+** About HashMap data structure
+~HashMap~ is a data structure which is efficient for lookup
+operations. ~HashMap~ does the key search operation in ~O(1)~.
+
+*** Strengths:
+- *Fast lookups*: since the ~HashMap~ performs the lookup operation in ~O(1)~,
+  it's efficient for the usecases we want to continously perform the search
+  operations on a series of data.
+- *Flexible Keys*: any comparable data type can be used as the key for ~HashMap~.
+
+*** Weaknesses:
+- *Slow worst-case lookup*: in the worst case which the Hash function generate
+  similar hash for the keys, the Lookup operation turns into ~O(n)~, which is
+  similar to the array or linked-list.
+- *Unordered*: the keys wont save in any special order, so if we want to look
+  for the greatest/lowest keys, we need to traverse all the keys to find the
+  desired one.
+- *one-direction lookup*: since we can look for the value of a key in
+  ~O(1)~, looking for the keys pointing to a specific value, requires to loop
+  over all the elements in the ~HashMap~ with ~O(n)~ order.
+- *not cache friendly*: since most of the ~HashMap~ implementations are based on
+  ~LinkedList~, we can't read a series of data together at once from the memory.
+
+|                  | Average | Worst Case |
+| <l>              |   <c>   |    <c>     |
+|------------------+---------+------------|
+| Space complexity |  O(n)   |    O(n)    |
+| Insertion time   |  O(1)   |    O(n)    |
+| Lookup time      |  O(1)   |    O(n)    |
+| Deletion time    |  O(1)   |    O(n)    |
+
+
+** Implementing HashMap in C
+
+#+BEGIN_QUOTE
+you can find the code for this blog post in [[https://github.com/ramajd/c_hashmap][this repository]]. 
+#+END_QUOTE
+
+in this post we want to implement a ~HashMap~ data structure, with ~int~ as the
+keys and ~void*~ as values.
+
+First step, we need to define the data structure that stores the ~HashMap~
+items. and also the functions for allocation and deletion operations. we call it
+~MapEntry~.
+
+#+BEGIN_SRC C
+  typedef struct _MapEntry {
+    int key;
+    void *value;
+    struct _MapEntry *next;
+  } MapEntry;
+
+  MapEntry *map_entry_init(int key, void *value);
+  void map_entry_free(MapEntry *entry);
+#+END_SRC
+
+the implementation for the allocation and deletion functions are
+straight-forward:
+
+- Allocate new ~MapEntry~:
+  #+BEGIN_SRC C
+    MapEntry *map_entry_init(int key, void *value) {
+      MapEntry *entry = malloc(sizeof(MapEntry));
+      entry->key = key;
+      entry->value = value;
+      entry->next = NULL;
+      return entry;
+    }
+  #+END_SRC
+
+- Free the memory allocated for ~MapEntry~: we should free the memory
+  recursively. for a ~MapEntry~ and all it's children.
+  #+BEGIN_SRC C
+    void map_entry_free(MapEntry *entry) {
+      while (entry && entry->next) {
+        map_entry_free(entry->next);
+      }
+      free(entry);
+    }
+  #+END_SRC
+
+Having the ~MapEntry~ structure, now we can go implementing the ~HashMap~
+itself.
+
+#+BEGIN_SRC C
+  typedef struct {
+    MapEntry **entries;
+    size_t count;
+    size_t size;
+  } HashMap;
+
+  HashMap *hash_map_init(size_t map_size);
+  void hash_map_free(HashMap *map);
+  void hash_map_insert(HashMap *map, int key, void *value);
+  bool hash_map_get(HashMap *map, int key, void *value);
+  void *hash_map_delete(HashMap *map, int key);
+#+END_SRC
+
+- Initiate new ~HashMap~: first we allocate the memory itself. then we need to
+  allocate the memory for it's entries.
+  #+BEGIN_SRC C
+    HashMap *hash_map_init(size_t map_size) {
+      HashMap *map = malloc(sizeof(map_size));
+      map->count = 0;
+      map->size = map_size;
+      map->entries = malloc(sizeof(MapEntry) * map_size);
+      size_t i;
+      for (i = 0; i < map_size; ++i) {
+        map->entries[i] = NULL;
+      }
+      return map;
+    }
+  #+END_SRC
+
+- Free an allocated ~HashMap~: first we need to free the map entries
+  recursively. then we delete the ~HashMap~ itself from memory.
+  #+BEGIN_SRC C
+    void hash_map_free(HashMap *map) {
+      size_t i;
+      for (i = 0; i < map->size; ++i) {
+        map_entry_free(map->entries[i]);
+        map->entries[i] = NULL;
+      }
+      free(map);
+    }
+  #+END_SRC
+
+- Hash function: we need to define a function to transform each key to a
+  position in ~HashMap~. for simplicity we use the reminder of the  ~key~
+  divided by map size as the item position.
+  #+BEGIN_SRC C
+    size_t hash_function(HashMap *map, int key) {
+      return key % map->size;
+    }
+  #+END_SRC
+  
+- Insert new value: first we need to calculate the key slot using our hash
+  function, then we will put the ~MapEntry~ to matching slot. in case of
+  colision occurence, we should add the entry to the end of the slot
+  linked-list.
+  #+BEGIN_SRC C
+    void hash_map_insert(HashMap *map, int key, void *value){
+      MapEntry *entry = map_entry_init(key, value);
+      size_t slot = hash_function(map, key);
+      if (map->entries[slot] == NULL) {
+        map->entries[slot] = entry;
+      } else {
+        MapEntry *iter = map->entries[slot];
+        while (iter->next) {
+          iter = iter->next;
+        }
+        iter->next = entry;
+      }
+      map->count += 1;
+    }
+  #+END_SRC
+
+- Get value for a key: to get the matching value for for a key, first we check
+  the matching slot in map, if the key not found, we traverse the linked-list.
+  #+BEGIN_SRC C
+    bool hash_map_get(HashMap *map, int key, void *value) {
+      size_t slot = hash_function(map, key);
+      MapEntry *iter = map->entries[slot];
+      while (iter) {
+        if (iter->key == key) {
+          value = iter->value;
+          return true;
+        }
+        iter = iter->next;
+      }
+      return false;
+    }
+  #+END_SRC
+
+- delete entry: similar to the ~has_map_get~ function, we need to search for the
+  matching key's position. then we should remove the entry, and update the
+  pointers for the matching entry, and it's parent entry.
+  #+BEGIN_SRC C
+    void *hash_map_delete(HashMap *map, int key) {
+      size_t slot = hash_function(map, key);
+      MapEntry *iter = map->entries[slot];
+      MapEntry *prv = NULL;
+      while (iter) {
+        if (iter->key == key) {
+          if (!prv) {
+            map->entries[slot] = iter->next;
+          } else {
+            prv->next = iter->next;
+          }
+          iter->next = NULL;
+          void *value = iter->value;
+          map_entry_free(iter);
+          map->count -= 1;
+          return value;
+        }
+        prv = iter;
+        iter = iter->next;
+      }
+      return NULL;
+    }
+  #+END_SRC
