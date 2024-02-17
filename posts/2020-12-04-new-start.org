@@ -16,7 +16,7 @@ It's been a while that I'm using /[[https://guix.gnu.org][GNU Guix]]/ on my work
 for me to use /[[https://www.gnu.org/software/emacs/][GNU Emacs]]/ as my common text editor and IDE. working more with
 Emacs, I love this editor much more.
 
-[[./static/images/emacs_gnu_org_mode.png]]
+[[../static/images/emacs_gnu_org_mode.png]]
 
 Since for each problem you face, Emacs provides you a solution, it also has a
 solution for my blogging Problem, /[[https://orgmode.org/][Org Mode]]/. search for Emacs blogging tools,

@@ -1,0 +1,152 @@
+body {
+    margin: 0;
+    background-color: #fff8f4;
+}
+
+.wrapper {
+    margin: auto;
+    width: 900px;
+    /* padding: 50px 100px; */
+    border: 1px solid gray;
+    font-family: 'Crimson Pro', sans;
+    font-size: 1.3em;
+    line-height: 1.3em;
+    background-color: white;
+}
+
+.wrapper > * {
+    margin: auto;
+    width: 750px;
+}
+
+.wrapper header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.wrapper header h1 {
+    margin-bottom: 0.2em;
+}
+
+.wrapper header nav > ul {
+    display: flex;
+    list-style: none;
+}
+
+.wrapper header nav > ul > li {
+    margin: 0.3em;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.wrapper .figure p {
+    text-align: center;
+}
+
+.wrapper footer {
+    border-top: 1px solid gray;
+    font-size: 0.8em;
+    padding-top: 2.0em;
+}
+
+/* Block Quotes */
+.wrapper blockquote:before {
+    color: #ccc;
+    content: open-quote;
+    font-size: 4em;
+    line-height: 0.1em;
+    margin-right: 0.25em;
+    vertical-align: -0.4em;
+    font-family: arial;
+    font-weight: bold;
+}
+.wrapper blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 0;
+  padding: 1.5em 10px;
+}
+.wrapper blockquote p {
+  display: inline;
+}
+
+
+/* Tables */
+
+table {
+    width: 100%;
+    border-spacing: 0;
+}
+
+table > thead th {
+    border-bottom: 1px solid;
+}
+
+table td.org-left, table th.org-left {
+    text-align: left;
+}
+
+table td.org-center, table th.org-center {
+    text-align: center;
+}
+
+table td.org-right, table th.org-right {
+    text-align: right;
+}
+
+
+
+/* Code Syntax Highlighting */
+
+:root {
+  /* colors */
+  --cl-border: #E7E7E7;
+  --cl-foreground: #212121;
+  --cl-background: #FFFFFF;
+  --cl-gray: #828282;
+  --cl-note: #F2FFDD;
+  --cl-link: #E49619;
+
+  /* -- Code Block Colors -- */
+
+  /* --- Monokai Theme */
+  --cl-code-monokai-background:   #272822;
+  --cl-code-monokai-foreground:   #F8F8F2;
+  --cl-code-monokai-comment:      #75715E;
+  --cl-code-monokai-red:          #F92672;
+  --cl-code-monokai-orange:       #FD971F;
+  --cl-code-monokai-light-orange: #E69F66;
+  --cl-code-monokai-yellow:       #E6DB74;
+  --cl-code-monokai-green:        #A6E22E;
+  --cl-code-monokai-blue:         #66D9EF;
+  --cl-code-monokai-purple:       #AE81FF;
+
+  /* --- Theme Variables */
+  --cl-code-background:           var(--cl-code-monokai-background);
+  --cl-code-foreground:           var(--cl-code-monokai-foreground);
+  --cl-code-builtin:              var(--cl-code-monokai-green);
+  --cl-code-comment:              var(--cl-code-monokai-comment);
+  --cl-code-function-name:        var(--cl-code-monokai-green);
+  --cl-code-keyword:              var(--cl-code-monokai-red);
+  --cl-code-string:               var(--cl-code-monokai-yellow);
+  --cl-code-type:                 var(--cl-code-monokai-blue);
+  --cl-code-variable-name:        var(--cl-code-monokai-orange);
+}
+
+.org-builtin          { color: var(--cl-code-builtin); }
+.org-doc              { color: var(--cl-code-doc); }
+.org-function-name    { color: var(--cl-code-function-name); }
+.org-keyword          { color: var(--cl-code-keyword); }
+.org-string           { color: var(--cl-code-string); }
+.org-type             { color: var(--cl-code-type); }
+.org-variable-name    { color: var(--cl-code-variable-name); }
+.org-comment, .org-comment-delimiter { color: var(--cl-code-comment); }
+.org-src-container    { color: var(--cl-code-foreground);
+                        background: var(--cl-code-background);
+                        border: 1px solid var(--cl-border-src);
+                        padding: 0px 15px;
+                        margin-bottom: 1.0em;
+                        max-width: 100%;
+                        overflow-y: scroll;
+                        border-radius: 5px; }

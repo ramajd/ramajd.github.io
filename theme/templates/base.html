@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    {% block head %}
+    <meta charset="utf-8">
+    <meta name="author" content="{{ site_owner }}">
+    <meta name="referrer" content="no-referrer">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/style.css" />
+    <link rel="icon" href="/static/favicon.png" />
+    <title>
+      {% block title %} {{ site_name | default("weblorg website")}} {% endblock %}
+    </title>
+    {% endblock %}
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <div>
+          <h1 class="title"><a href="{{ url_for("index") }}">{{ site_name }}</a></h1>
+          <span class="subtitle">{{ site_description }}</span>
+        </div>
+        <nav>
+          <ul>
+            <li><a href="{{ url_for("pages", slug="archive") }}">Posts</a></li>
+            <li><a href="{{ url_for("pages", slug="about") }}">About</a></li>
+          </ul>
+        </nav>
+      </header>
+      <div class="content">
+        {% block main %}{% endblock %}
+      </div>
+      <footer>
+        <center>
+          <a rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/">
+            <img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png"></a>
+          <br>
+          licensed under a
+          <a rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/">
+            Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
+        </center>
+      </footer>
+    </div>
+  </body>
+</html>

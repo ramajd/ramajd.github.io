@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block main %}
+
+<h2>About me</h2>
+
+<p>
+  {{ site_description }}
+</p>
+
+<h2>Recent Posts</h2>
+
+<ul>
+  {% for post in posts|take(10) %}
+  <li><a href="{{ url_for("posts", slug=post.slug) }}">{{ post.title }}</a></li>
+  {% endfor %}
+  {% if len(posts) > 10 %}
+  <li><a href="{{ url_for("pages", slug="archive") }}">more ...</a></li>
+  {% endif %}
+</ul>
+
+
+{% endblock %}

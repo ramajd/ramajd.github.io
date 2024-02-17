@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block main %}
+
+<h2>Blog Archive</h2>
+
+<ul>
+  {% for post in posts %}
+  <li><a href="{{ url_for("posts", slug=post.slug) }}">{{ post.title }}</a></li>
+  {% endfor %}
+</ul>
+
+
+{% endblock %}
