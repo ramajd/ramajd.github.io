@@ -23,11 +23,8 @@
 (require 'htmlize)
 (setq org-html-htmlize-output-type 'css)
 
-
-(weblorg-site
- :template-vars '(("site_name" . "RAMajd's daily notes")
-                  ("site_owner" . "Reza Alizadeh Majd <r.a.majd@gmail.com>")
-                  ("site_description" . "Notes about challenges I face during my day to day work")))
+(add-to-list 'load-path "./")
+(require 'site)
 
 (weblorg-route
  :name "posts"
