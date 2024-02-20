@@ -1,6 +1,22 @@
-(add-to-list 'load-path "~/.emacs.d/straight/repos/weblorg")
-(add-to-list 'load-path "~/.emacs.d/straight/repos/emacs-htmlize")
-(add-to-list 'load-path "~/.emacs.d/straight/repos/templatel")
+;; (add-to-list 'load-path "~/.emacs.d/straight/repos/weblorg")
+;; (add-to-list 'load-path "~/.emacs.d/straight/repos/emacs-htmlize")
+;; (add-to-list 'load-path "~/.emacs.d/straight/repos/templatel")
+
+
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+;; Install and configure dependencies
+(use-package weblorg :ensure t)
+(use-package htmlize
+  :ensure t
+  :config
+  (setq org-html-htmlize-output-type 'css))
+
 
 (require 'weblorg)
 

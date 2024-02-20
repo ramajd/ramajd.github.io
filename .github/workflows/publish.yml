@@ -1,0 +1,14 @@
+name: Publish
+on:
+  push:
+    branches:
+      - weblorg
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Publish Org Files
+        uses: maker2413/weblorg-action@v1.0.0
