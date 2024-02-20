@@ -5,19 +5,31 @@
 <h2>About me</h2>
 
 <p>
-  {{ site_description }}
+  My name is <i>Reza Alizadeh Majd</i>. it's been more than 10 years that I'm working as software developer.
+  My tech stack is mostly based on <code>C/C++</code> focused on <code>Posix</code> systems.
 </p>
+<p>
+  Sharing the challenges I face during my work in this blog, helps me to memoraize the solutions I ended with,
+  it also might be helpful for others.
+</p>
+
 
 <h2>Recent Posts</h2>
 
-<ul>
+<ul class="recent">
   {% for post in posts|take(10) %}
-  <li><a href="{{ url_for("posts", slug=post.slug) }}">{{ post.title }}</a></li>
+  <li><a href="{{ url_for("posts", slug=post.slug) }}">{{ post.title }}</a><span class="time">{{ post.date | strftime("%B %d, %Y") }}</span></li>
   {% endfor %}
   {% if len(posts) > 10 %}
   <li><a href="{{ url_for("pages", slug="archive") }}">more ...</a></li>
   {% endif %}
 </ul>
+
+<h2>Contact</h2>
+<p>
+  Other than this blog, you can contact me by email using <code>r.a.majd</code> on Gmail.
+  I also share my thoughts (mostly in Persian) on 𝕏(Twitter) as <a href="https://twitter.com/r_amajd" target="blank">r_amajd</a>.
+</p>
 
 
 {% endblock %}

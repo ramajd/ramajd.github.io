@@ -29,6 +29,10 @@ body {
     margin-bottom: 0.2em;
 }
 
+.wrapper header .subtitle {
+    font-size: 0.9em;
+}
+
 .wrapper header nav > ul {
     display: flex;
     list-style: none;
@@ -48,6 +52,30 @@ body {
     border-top: 1px solid gray;
     font-size: 0.8em;
     padding-top: 2.0em;
+}
+
+.wrapper a {
+    text-decoration: none;
+}
+a, a:visited { color: #17a7fd; }
+a:hover { color: #0f7bbb; }
+
+
+.wrapper code {
+    color: #313131;
+    background-color: #e5e5e5;
+    padding: 1px 5px;
+    font-family: monospace;
+    font-weight: lighter;
+    font-size: 0.9em;
+}
+
+.wrapper .recent {
+    list-style: none;
+    line-height: 1.5em;
+}
+.wrapper .recent li > .time {
+    float: right;
 }
 
 /* Block Quotes */

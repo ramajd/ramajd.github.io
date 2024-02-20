@@ -1,6 +1,19 @@
 #+title: About
 #+date: <2024-02-18 00:54>
 #+filetags: pages
+#+options: ^:nil
 
+** About me
+My name is /Reza Alizadeh Majd/, born an live in Tehran, Iran. Computer world was my passion from the childhood, and applying
+for /Software Engineering/ was my only choice in university, and finally I got my BSc in /Software Engineering/ from /University of Arak/.
 
-About me
+As a /Software Engineer/ it's more than 10 years that I'm working for multiple companies in various industrial fields.
+My main tech stack is based on ~C/C++~ mostly focused on ~Posix~ systems. I am also familiar with web development using ~Javascript~ and ~NodeJS~.
+
+I also have a passion about *Free Software* and *Open Source* philosophy, and had contributions to the [[https://git.savannah.gnu.org/cgit/guix.git/log/?qt=author&q=Reza+Alizadeh+Majd][GNU Guix community]].
+I also share the codes I personally work on in my [[https://github.com/ramajd][Github]] account.
+
+** Contact links
+- You can contact me by my email addess: ~r.a.majd~ on ~Gmail~.
+- My 𝕏(Twitter) account: [[https://twitter.com/r_amajd][r_amajd]]
+- My LinkedIn Profile: [[https://ir.linkedin.com/in/reza-alizadeh-majd-a988763a][Reza Alizadeh Majd]]
