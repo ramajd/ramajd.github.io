@@ -13,31 +13,9 @@ in order to run the ~proc~ as a prebuild step in our ~CMake~ project, I prepared
 the following ~macro~ which precompile operation on list of files provided as
 input and saves the target sources in provided variable name.
 
-#+BEGIN_SRC cmake
-macro(compile_proc)
-    set(options)
-    set(oneValueArgs ARG)
-    set(multiValueArgs FILES)
-    cmake_parse_arguments(ARGUMENT "${options}" "${oneValueArgs}" "${multiValueArgs}" "${ARGN}")
-
-    foreach(procfile ${ARGUMENT_FILES})
-        add_custom_command(
-            OUTPUT ${procfile}.cpp
-            COMMAND
-                LD_LIBRARY_PATH=${ORACLE_HOME} ${ORACLE_HOME}/sdk/proc
-                    DEFINE=UNIX DEFINE=Linux DEFINE=PROC SQLCHECK=SYNTAX LTYPE=NONE MODE=ORACLE  LINES=YES CODE=CPP CPP_SUFFIX=cpp DEF_SQLCODE=YES
-                    include=/usr/lib/clang/17/include/
-                    include=${CMAKE_CURRENT_SOURCE_DIR}
-                    iname=${CMAKE_CURRENT_SOURCE_DIR}/${procfile}
-                    oname=${CMAKE_CURRENT_BINARY_DIR}/${procfile}.cpp
-            DEPENDS
-                ${procfile}
-            COMMENT "Pre-Compile ${procfile}"
-        )
-        list(APPEND "${ARGUMENT_ARG}" ${procfile}.cpp)
-    endforeach()
-endmacro(compile_proc)
-#+END_SRC
+#+BEGIN_EXPORT html
+<script src="https://gist.github.com/ramajd/0c6ae50993c9e6213a6cc041b6e97b1b.js"></script>
+#+END_EXPORT
 
 defining this macro, later we can use it as follows:
 
