@@ -1,0 +1,57 @@
+#+title: CMake macro to pre-compile Oracle Pro*C sources
+#+date: <2024-06-24 12:29>
+#+description:
+#+filetags: cmake c c++ programming
+
+Oracle provides the /PreCompiler tools/ to allow developers to embed their
+SQL queries inside their source code, for this purpose, we need to usee the
+~proc~ precompiler shipped with this package to generate ~C/C++~ sources
+for our SQL queries written in ~Pro* C~, and build our application against
+the generated sources.
+
+in order to run the ~proc~ as a prebuild step in our ~CMake~ project, I prepared
+the following ~macro~ which precompile operation on list of files provided as
+input and saves the target sources in provided variable name.
+
+#+BEGIN_SRC cmake
+macro(compile_proc)
+    set(options)
+    set(oneValueArgs ARG)
+    set(multiValueArgs FILES)
+    cmake_parse_arguments(ARGUMENT "${options}" "${oneValueArgs}" "${multiValueArgs}" "${ARGN}")
+
+    foreach(procfile ${ARGUMENT_FILES})
+        add_custom_command(
+            OUTPUT ${procfile}.cpp
+            COMMAND
+                LD_LIBRARY_PATH=${ORACLE_HOME} ${ORACLE_HOME}/sdk/proc
+                    DEFINE=UNIX DEFINE=Linux DEFINE=PROC SQLCHECK=SYNTAX LTYPE=NONE MODE=ORACLE  LINES=YES CODE=CPP CPP_SUFFIX=cpp DEF_SQLCODE=YES
+                    include=/usr/lib/clang/17/include/
+                    include=${CMAKE_CURRENT_SOURCE_DIR}
+                    iname=${CMAKE_CURRENT_SOURCE_DIR}/${procfile}
+                    oname=${CMAKE_CURRENT_BINARY_DIR}/${procfile}.cpp
+            DEPENDS
+                ${procfile}
+            COMMENT "Pre-Compile ${procfile}"
+        )
+        list(APPEND "${ARGUMENT_ARG}" ${procfile}.cpp)
+    endforeach()
+endmacro(compile_proc)
+#+END_SRC
+
+defining this macro, later we can use it as follows:
+
+#+BEGIN_SRC cmake
+  compile_proc(
+    ARG oracle_sources
+    FILES
+       file1.pc
+       file2.pc
+       file3.pc
+  )
+
+  add_executable(app
+    ${oracle_sources}
+    ...
+  )
+#+END_SRC
