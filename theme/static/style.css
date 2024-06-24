@@ -4,7 +4,7 @@ body {
 }
 
 .wrapper {
-    margin: auto;
+    margin: 20px auto;
     width: 900px;
     /* padding: 50px 100px; */
     border: 1px solid gray;
