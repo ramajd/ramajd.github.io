@@ -52,3 +52,8 @@ lets try some multiline text as out blockquote sdasdsf dsfdf gdfg fgd gsfsdf sdf
 dsf dsf sdf dsf ds fdsf sdf ds fdf dsf sdf dsf sdf dsf dsf sdftrytryuytykjkjk
 dfxzds fa fsd a.
 #+END_QUOTE
+
+
+#+BEGIN_EXPORT html
+<script src="https://gist.github.com/ramajd/0c6ae50993c9e6213a6cc041b6e97b1b.js"></script>
+#+END_EXPORT
