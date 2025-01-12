@@ -1,0 +1,66 @@
+#+title: VCPKG Property Group issue with MSBuild
+#+date: <2025-01-12 10:25>
+#+description: Resolving vcpkg Overriding Visual Studio Project Properties
+#+filetags: c++ vcpkg msbuild msvc
+
+
+When using vcpkg with Visual Studio 2022, some developers have reported issues
+with vcpkg overriding project properties set within Visual Studio projects.
+This article summarizes the root cause and potential resolutions, based on
+discussions in [[https://github.com/microsoft/vcpkg/issues/27906][Github issue #27906]].
+
+[[../static/images/vcpkg-msbuild.png]]
+
+** The Problem
+The problem arises when vcpkg’s settings, defined in the ~vcxproj~ file, take
+precedence over the Visual Studio project properties. This can lead to
+unexpected behavior during the build process, as the project-specific
+configurations may not be applied correctly.
+
+*** Key Observations
+1. The issue is specific to certain configurations where vcpkg property groups
+   are evaluated after the project’s configuration properties.
+2. This sequencing causes vcpkg’s settings to override properties that the
+   developer intended to prioritize.
+
+** Root Cause
+The root cause lies in the order of property evaluation in MSBuild. In the
+typical MSBuild process:
+
+- Properties are evaluated in sequence based on the order defined in the build
+  files.
+- If vcpkg property groups introduces settings after the project definitions,
+  they might override user-defined properties unless explicitly handled.
+
+** Suggested Resolution
+To address this issue, developers should:
+
+1. Review the ~vcxproj~ File: Examine the order of property group definitions and
+   imports.
+2. Ensure Proper Overrides: Use the Condition attribute in property definitions
+   to ensure that user-defined properties are not overridden unintentionally.
+   #+BEGIN_SRC xml
+     <PropertyGroup Label="Vcpkg" Condition="'$(YourProperty)' == ''">
+        <YourProperty>DefaultValue</YourProperty>
+     </PropertyGroup>
+   #+END_SRC
+
+3. Modify Project Files: Explicitly set project-specific properties in a way that
+   ensures they are applied after vcpkg’s settings.
+   #+BEGIN_SRC xml
+     <PropertyGroup Label="Vcpkg" Condition="'$(YourProperty)' == ''">
+        <YourProperty>DefaultValue</YourProperty>
+     </PropertyGroup>
+     ...
+     <Import Project="$(VCTargetPath)\Microsot.Cpp.targets" />
+     ...
+   #+END_SRC
+
+
+
+** Conclusion
+This issue highlights the importance of understanding MSBuild’s property
+evaluation mechanism, especially when integrating third-party tools like vcpkg.
+By carefully managing the order of property evaluations and using conditions,
+developers can ensure their Visual Studio project properties are applied as
+intended.
