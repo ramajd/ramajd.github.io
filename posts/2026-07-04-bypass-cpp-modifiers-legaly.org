@@ -1,0 +1,134 @@
+#+TITLE: Bypassing C++ Private Access Modifiers using templates
+#+AUTHOR: Reza Alizadeh Majd <r.a.majd@gmail.com>
+#+DATE: [2026-07-04 Sat]
+#+description: Access class private members using templates
+#+filetags: c++, metaprogramming, templates, programming 
+#+KEYWORDS: c++, metaprogramming, templates, programming
+
+* Introduction
+
+In C++, access modifiers like =private= and =protected= are fundamental pillars
+of encapsulation. They prevent external code from tampering with an object's
+internal state. However, sometimes—whether you are writing a deep testing
+framework, a serialization library, or debugging legacy code—you desperately
+need to access a private member without modifying the target class.
+
+While many developers resort to the classic (and illegal) =#define private
+public= hack, it triggers **Undefined Behavior** under the C++ Standard due to
+One Definition Rule (ODR) violations.
+
+Fortunately, there is a 100% standard-compliant, legal loophole that bypasses
+=private= access without triggering undefined behavior. In this post, we will
+describe the this solution which uses themplete explicit instantiations.
+
+* The Code Snippet
+
+Here is the complete implementation of the "thief" pattern:
+
+#+BEGIN_SRC cpp
+namespace private_access {
+
+template <typename PtrType, PtrType Ptr, typename Tag>
+struct thief {
+  friend PtrType steal(Tag) { return Ptr; }
+};
+
+}  // namespace private_access
+
+
+#define PRIVATE_ACCESS_FIELD(CLASS, TYPE, MEMBER, NAME)                         \
+  namespace private_access {                                                    \
+  struct NAME##_tag {                                                           \
+    using type = TYPE CLASS::*;                                                 \
+    friend type steal(NAME##_tag);                                              \
+  };                                                                            \
+  template struct thief<TYPE CLASS::*, &CLASS::MEMBER, NAME##_tag>;             \
+  inline TYPE &NAME(CLASS &o) { return o.*steal(NAME##_tag{}); }                \
+  inline const TYPE &NAME(const CLASS &o) { return o.*steal(NAME##_tag{}); }    \
+  }
+#+END_SRC
+
+* How It Works: The Loophole
+
+The entire exploit relies on a single, fascinating rule buried in the ISO C++
+Standard:
+
+#+BEGIN_QUOTE
+**C++ Standard Loophole:** Access controls (=private= / =protected=) are *not*
+  checked or enforced during explicit template instantiations.
+#+END_QUOTE
+
+Even though =&CLASS::MEMBER= points to a private field, passing it as a template
+argument inside an explicit instantiation (=template struct thief<...>;=) is
+perfectly legal. The compiler will gladly process it and bake the pointer into
+the generated structure.
+
+** The Mechanism Break Down
+
+1. **The Vault (=thief= struct):**
+   The template struct =thief= defines a global friend function called
+   =steal(Tag)= inside its body. Because it's defined inside the template, it
+   isn't actually generated until the template is instantiated. When it is
+   generated, it returns the private member pointer.
+
+2. **The Tag Generation (=NAME##_tag=):**
+   The macro creates a unique struct type for each field you want to steal. This
+   ensures we don't pollute the global scope or cause collisions between
+   different stolen members. It also forward-declares the =steal= function
+   matching that tag.
+
+3. **The Payload (Explicit Instantiation):**
+   The macro invokes:
+   #+BEGIN_SRC cpp
+   template struct thief<TYPE CLASS::*, &CLASS::MEMBER, NAME##_tag>;
+   #+END_SRC
+   This forces the compiler to instantiate the =thief= struct with your private
+   member pointer. As it ignores access checks here, the =steal= function is
+   injected into the namespace, permanently caching your private pointer.
+
+4. **The Cleaner Interface:**
+   Finally, it provides two handy wrapper functions (=NAME(CLASS &o)=) that
+   leverage the pointer-to-member operator (=.*=) to expose the field cleanly.
+
+* Real-World Example
+
+Let's see it in action against a hypothetical =BankVault= class holding a
+private =secret=:
+
+#+BEGIN_SRC cpp
+#include <iostream>
+
+class BankVault {
+private:
+    int secret = 999;
+};
+
+// Apply our macro to create an accessor named "get_secret"
+PRIVATE_ACCESS_FIELD(BankVault, int, secret, get_secret)
+
+int main() {
+    BankValult v;
+
+    int value = private_access::get_secret(v); // value = 999
+
+    // Modify the private member!
+    private_access::get_secret(v) = 12;
+}
+#+END_SRC
+
+
+* Conclusion
+
+This approach is highly robust because it adheres completely to standard
+language specifications, meaning the compiler cannot optimize it away as
+"invalid code." It is widely used in serious engineering frameworks (like
+advanced testing harnesses or serialization libraries) where modifying source
+definitions isn't an option.
+
+However, remember the golden rule of software engineering: **Just because you
+can, doesn't mean you should.** Use this superpower strictly for testing,
+debugging, or tooling—never as a shortcut to bypass proper architectural
+encapsulation in production code.
+
+
+
