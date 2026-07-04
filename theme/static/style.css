@@ -123,6 +123,10 @@ table td.org-right, table th.org-right {
     text-align: right;
 }
 
+/* Pages */
+.wrapper .post__title {
+  line-height: 1.0em;
+}
 
 
 /* Code Syntax Highlighting */
